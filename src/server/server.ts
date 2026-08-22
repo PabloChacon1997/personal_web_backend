@@ -1,5 +1,6 @@
 import express, { Router } from 'express';
 import path from 'path';
+import morgan from 'morgan'
 
 interface Options {
   port: number;
@@ -29,6 +30,7 @@ export class Server {
     
 
     //* Middlewares
+    this.app.use(morgan('dev'));
     this.app.use( express.json() ); // raw
     this.app.use( express.urlencoded({ extended: true }) ); // x-www-form-urlencoded
 
@@ -39,7 +41,7 @@ export class Server {
     this.app.use( this.routes );
 
     //* SPA /^\/(?!api).*/  <== Únicamente si no empieza con la palabra api
-    this.app.get('*', (req, res) => {
+    this.app.get('/{*splat}', (req, res) => {
       const indexPath = path.join( __dirname + `../../../${ this.publicPath }/index.html` );
       res.sendFile(indexPath);
     });
