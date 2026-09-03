@@ -14,6 +14,8 @@
     "exactOptionalPropertyTypes": true,
     "isolatedModules": true,
     "moduleDetection": "force",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   }
