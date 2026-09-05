@@ -1,6 +1,7 @@
 import { bcryptAdapter } from "../config/bcrypt.adapter";
 import { UserRepository } from "../repositories/user.repository";
 import { RegisterInput } from "../schemas/auth.schema";
+import { CustomError } from "../utils/custom.error";
 
 
 
@@ -9,7 +10,7 @@ export class AuthService {
 
   async register(data: RegisterInput) {
     const existsUser = await this.userRepository.findByEmail(data.email);
-    if (existsUser) throw new Error('Usuario ya existe');
+    if (existsUser) throw CustomError.badRequest('Ya existe una cuenta con este email')
     try {
       const hashPassword = bcryptAdapter.hash(data.password);
       
@@ -24,7 +25,7 @@ export class AuthService {
       return user;
 
     } catch (error) {
-      throw new Error('Hubo un error');
+      throw CustomError.internalServer(`${error}`);
     }
 
   }

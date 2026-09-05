@@ -1,20 +1,31 @@
 import { Request, Response } from "express";
 import { registerSchema } from "../schemas/auth.schema";
 import { AuthService } from "../services/auth.service";
+import { CustomError } from "../utils/custom.error";
 
 
 export class AuthController {
   constructor(
     public readonly authService: AuthService
   ) {}
-  public register = (req: Request, res: Response) => {
-    const userRegister = registerSchema.safeParse(req.body);
-    if (!userRegister.success) {
-      return res.status(400).json({error: 'Error'});
+
+  private handleError = (error: unknown, res: Response) => {
+    if (error instanceof CustomError) {
+      return res.status(error.statusCode).json({ error: error.message });
     }
 
-    this.authService.register(userRegister.data)
+    return res.status(500).json({error: 'Internal server error'});
+  }
+
+  public register = (req: Request, res: Response) => {
+    const result = registerSchema.safeParse(req.body);
+    if (!result.success) {
+      const errors = result.error.flatten().fieldErrors;
+      return res.status(400).json({errors})
+    }
+
+    this.authService.register(result.data)
       .then(user => res.json(user))
-      .catch(error => res.status(500).json({error: error.message}));
+      .catch(error => this.handleError(error, res));
   }
 }
