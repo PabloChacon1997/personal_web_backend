@@ -5,7 +5,7 @@ import { envs } from './envs';
 const JWT_SEED = envs.JWT_SEED;
 
 export class JwtAdapter {
-  static generateToken = (payload: any, duration: number) => {
+  static generateToken = (payload: any, duration: number | `${number}${'s' | 'm' | 'h' | 'd'}` = '2h') => {
     return new Promise((resolve) => {
       jwt.sign(payload, JWT_SEED, {expiresIn: duration}, (err, token) => {
         if (err) return resolve(null);
@@ -14,9 +14,9 @@ export class JwtAdapter {
     });
   }
 
-  static refreshToken = (payload: any, duration: number) => {
+  static refreshToken = (payload: any) => {
     return new Promise((resolve) => {
-      jwt.sign(payload, JWT_SEED, {expiresIn: duration}, (err, token) => {
+      jwt.sign(payload, JWT_SEED, {expiresIn: "7 d"}, (err, token) => {
         if (err) return resolve(null);
         resolve(token)
       })

@@ -13,4 +13,8 @@ export class UserRepository {
     const user = this.repository.create(data);
     return this.repository.save(user);
   }
+
+  findById(id: string) {
+    return this.repository.findOne({ where: { id } });
+  }
 }

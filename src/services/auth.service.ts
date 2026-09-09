@@ -1,6 +1,7 @@
 import { bcryptAdapter } from "../config/bcrypt.adapter";
+import { JwtAdapter } from "../config/jwt.adapter";
 import { UserRepository } from "../repositories/user.repository";
-import { RegisterInput } from "../schemas/auth.schema";
+import { LoginInput, RefreshTokenInput, RegisterInput } from "../schemas/auth.schema";
 import { CustomError } from "../utils/custom.error";
 
 
@@ -24,6 +25,39 @@ export class AuthService {
 
       return user;
 
+    } catch (error) {
+      throw CustomError.internalServer(`${error}`);
+    }
+
+  }
+
+  async login(data: LoginInput) {
+    const user = await this.userRepository.findByEmail(data.email.toLowerCase());
+    if (!user) throw CustomError.badRequest('Credenciales incorrectas');
+    
+    const isMatching = bcryptAdapter.compare(data.password, user.password)
+    if(!isMatching) throw CustomError.badRequest('Credenciales incorrectas');
+    if (!user.active) throw CustomError.unauthorized('Usuario no activado');
+    const {password, ...userEntity} = user;
+
+    const token = await JwtAdapter.generateToken({id: user.id});
+    const refresh = await JwtAdapter.refreshToken({id: user.id});
+    return {
+      user: userEntity,
+      token,
+      refresh
+    };
+    
+  }
+
+  async refreshToken(data: RefreshTokenInput) {
+    try {
+      const payload = await JwtAdapter.validateToken(data.refresh) as any;
+      if (!payload) throw CustomError.unauthorized('Invalid refresh token');
+      const user = await this.userRepository.findById(payload.id);
+      if (!user) throw CustomError.internalServer('Invalid refresh token');
+      const token = await JwtAdapter.generateToken({id: user.id});
+      return token
     } catch (error) {
       throw CustomError.internalServer(`${error}`);
     }
