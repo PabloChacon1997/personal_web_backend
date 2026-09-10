@@ -17,4 +17,16 @@ export class UserRepository {
   findById(id: string) {
     return this.repository.findOne({ where: { id } });
   }
+
+  find() {
+    return this.repository.find();
+  }
+
+  findInactive() {
+    return this.repository.find({ where: { active: false } });
+  }
+
+  findActive() {
+    return this.repository.find({ where: { active: true } });
+  }
 }
