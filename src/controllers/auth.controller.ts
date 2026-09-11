@@ -25,7 +25,7 @@ export class AuthController {
     }
 
     this.authService.register(result.data)
-      .then(user => res.json(user))
+      .then(user => res.status(201).json(user))
       .catch(error => this.handleError(error, res));
   }
 

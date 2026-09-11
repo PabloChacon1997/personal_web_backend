@@ -1,12 +1,17 @@
 import express, { Router } from 'express';
 import path from 'path';
 import morgan from 'morgan'
+import swaggerUi from 'swagger-ui-express'
+
+import { generateOpenApiDocument } from '../config/swagger';
 
 interface Options {
   port: number;
   routes: Router;
   public_path?: string;
 }
+
+const openApiDocument = generateOpenApiDocument();
 
 
 export class Server {
@@ -39,6 +44,7 @@ export class Server {
 
     //* Routes
     this.app.use( this.routes );
+    this.app.use('/docs', swaggerUi.serve, swaggerUi.setup(openApiDocument));
 
     //* SPA /^\/(?!api).*/  <== Únicamente si no empieza con la palabra api
     this.app.get('/{*splat}', (req, res) => {

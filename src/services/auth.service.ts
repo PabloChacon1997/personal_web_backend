@@ -11,7 +11,7 @@ export class AuthService {
 
   async register(data: RegisterInput) {
     const existsUser = await this.userRepository.findByEmail(data.email);
-    if (existsUser) throw CustomError.badRequest('Ya existe una cuenta con este email')
+    if (existsUser) throw CustomError.conflict('Ya existe una cuenta con este email')
     try {
       const hashPassword = bcryptAdapter.hash(data.password);
       
@@ -53,9 +53,9 @@ export class AuthService {
   async refreshToken(data: RefreshTokenInput) {
     try {
       const payload = await JwtAdapter.validateToken(data.refresh) as any;
-      if (!payload) throw CustomError.unauthorized('Invalid refresh token');
+      if (!payload) throw CustomError.unauthorized('Refresh Token Inválido');
       const user = await this.userRepository.findById(payload.id);
-      if (!user) throw CustomError.internalServer('Invalid refresh token');
+      if (!user) throw CustomError.internalServer('Error en el servidor');
       const token = await JwtAdapter.generateToken({id: user.id});
       return token
     } catch (error) {
