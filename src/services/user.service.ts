@@ -5,7 +5,6 @@ export class UserService {
   private userRepository = new UserRepository();
 
   async findAll(active: string | undefined) {
-    console.log(active)
     if (active === undefined) {
       return await this.userRepository.find();
     }

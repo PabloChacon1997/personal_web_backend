@@ -27,4 +27,8 @@ export class UserController {
       .then(users => res.json(users))
       .catch(error => this.handleError(error, res));
   }
+
+  public createUser = async (req: Request, res: Response) => {
+    res.send('Create user')
+  }
 }

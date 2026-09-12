@@ -1,6 +1,7 @@
 import { OpenAPIRegistry } from "@asteasolutions/zod-to-openapi";
 
 import { loginResponseSchema, loginSchema, refreshResponseSchema, refreshSchema, registerResponseSchema, registerSchema } from "../schemas/auth.schema";
+import { listUsersQuerySchema, meResponseSchema } from "../schemas/user.schema";
 
 
 export const registry = new OpenAPIRegistry();
@@ -73,7 +74,7 @@ registry.registerPath({
 
 registry.registerPath({
   method: 'post',
-  path: '/auth//refresh-token',
+  path: '/auth/refresh-token',
   tags: ['Auth'],
   summary: "Refrescar el token",
   request: {
@@ -88,5 +89,39 @@ registry.registerPath({
     },
     401: { description: 'Refresh Token Inválido' },
     500: { description: 'Error en el servidor' },
+  }
+});
+
+registry.registerPath({
+  method: 'get',
+  path: '/user/me',
+  tags: ['User'],
+  summary: "Obtener el usuario autenticado",
+  security: [{ bearerAuth: [] }],
+  request: {},
+  responses: {
+    200: {
+      description: "Usuario autenticado",
+      content: { 'application/json': { schema: meResponseSchema } }
+    },
+    401: { description: 'Token Inválido' },
+  }
+});
+
+registry.registerPath({
+  method: 'get',
+  path: '/user/users',
+  tags: ['User'],
+  summary: "Lista de usuarios",
+  security: [{ bearerAuth: [] }],
+  request: {
+    query: listUsersQuerySchema
+  },
+  responses: {
+    200: {
+      description: "Usuario autenticado",
+      content: { 'application/json': { schema: meResponseSchema } }
+    },
+    401: { description: 'Token Inválido' },
   }
 });
