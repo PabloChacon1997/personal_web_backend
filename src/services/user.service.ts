@@ -1,4 +1,7 @@
+import { bcryptAdapter } from "../config/bcrypt.adapter";
 import { UserRepository } from "../repositories/user.repository";
+import { CreateUserDto } from "../schemas/user.schema";
+import { CustomError } from "../utils/custom.error";
 
 
 export class UserService {
@@ -12,5 +15,22 @@ export class UserService {
       return await this.userRepository.findInactive();
     }
     return await this.userRepository.findActive();
+  }
+
+  async createUser(data: CreateUserDto) {
+    const user = await this.userRepository.findByEmail(data.email);
+    if (user) throw CustomError.conflict('Ya existe un usuario con este email');
+    try {
+      // TODO: Procesar imagen/avatar
+      const hashPassword = bcryptAdapter.hash(data.password);
+      await this.userRepository.create({
+        ...data,
+        email: data.email.toLowerCase(),
+        password: hashPassword
+      });
+      return "Usuario creado correctamente";
+    } catch (error) {
+      throw CustomError.internalServer(`${error}`);
+    }
   }
 }

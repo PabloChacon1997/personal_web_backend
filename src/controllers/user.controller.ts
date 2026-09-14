@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { CustomError } from "../utils/custom.error";
 import { UserService } from "../services/user.service";
+import { createUserDtoSchema } from "../schemas/user.schema";
 
 
 export class UserController {
@@ -29,6 +30,14 @@ export class UserController {
   }
 
   public createUser = async (req: Request, res: Response) => {
-    res.send('Create user')
+    const result = createUserDtoSchema.safeParse(req.body);
+    if (!result.success) {
+      const errors = result.error.flatten().fieldErrors;
+      return res.status(400).json({errors})
+    }
+
+    this.userService.createUser(result.data)
+      .then(users => res.json(users))
+      .catch(error => this.handleError(error, res));
   }
 }
