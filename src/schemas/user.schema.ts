@@ -49,7 +49,6 @@ export const createUserDtoSchema = userSchema.pick({
   password: true,
   role: true,
   active: true,
-  avatar: true,
 });
 
 export type CreateUserDto = z.infer<typeof createUserDtoSchema>;

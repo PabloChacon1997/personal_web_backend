@@ -30,13 +30,14 @@ export class UserController {
   }
 
   public createUser = async (req: Request, res: Response) => {
+
     const result = createUserDtoSchema.safeParse(req.body);
     if (!result.success) {
       const errors = result.error.flatten().fieldErrors;
       return res.status(400).json({errors})
     }
 
-    this.userService.createUser(result.data)
+    this.userService.createUser(result.data, req.file?.buffer)
       .then(users => res.json(users))
       .catch(error => this.handleError(error, res));
   }

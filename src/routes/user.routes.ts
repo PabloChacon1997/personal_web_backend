@@ -1,7 +1,9 @@
 import { Router } from "express";
+
 import { UserController } from '../controllers/user.controller';
 import { AuthMiddleware } from "../middlewares/auth.middleware";
 import { UserService } from "../services/user.service";
+import { upload } from "../middlewares/upload.middleware";
 
 
 export class UserRoutes {
@@ -12,7 +14,7 @@ export class UserRoutes {
 
     router.get('/me',[AuthMiddleware.authenticate], userController.getMe);
     router.get('/users',[AuthMiddleware.authenticate], userController.getUsers);
-    router.post('/user',[AuthMiddleware.authenticate], userController.createUser);
+    router.post('/user',[AuthMiddleware.authenticate, upload], userController.createUser);
 
     return router;
   }
