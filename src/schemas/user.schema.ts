@@ -51,4 +51,14 @@ export const createUserDtoSchema = userSchema.pick({
   active: true,
 });
 
+export const updateUserDtoSchema = userSchema.pick({
+  firstname: true,
+  lastname: true,
+  email: true,
+  password: true,
+  role: true,
+  active: true,
+}).partial();
+
+
 export type CreateUserDto = z.infer<typeof createUserDtoSchema>;

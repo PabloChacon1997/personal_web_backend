@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { CustomError } from "../utils/custom.error";
 import { UserService } from "../services/user.service";
-import { createUserDtoSchema } from "../schemas/user.schema";
+import { createUserDtoSchema, updateUserDtoSchema } from "../schemas/user.schema";
 
 
 export class UserController {
@@ -38,6 +38,30 @@ export class UserController {
     }
 
     this.userService.createUser(result.data, req.file?.buffer)
+      .then(users => res.json(users))
+      .catch(error => this.handleError(error, res));
+  }
+
+  public updateUser = async (req: Request, res: Response) => {
+    const id = req.params.id as string;
+    const result = updateUserDtoSchema.safeParse(req.body);
+    if (!result.success) {
+      const errors = result.error.flatten().fieldErrors;
+      return res.status(400).json({errors})
+    }
+
+    this.userService.updateUser(id, req.body, req.file?.buffer)
+      .then(users => res.json(users))
+      .catch(error => this.handleError(error, res));
+  }
+
+  public deleteUser = async (req: Request, res: Response) => {
+    const id = req.params.id as string;
+    if (req.user!.id === id) {
+      const error = new Error('No puedes eliminar tu propio usuario');
+      return res.status(400).json({error: error.message});
+    }
+    this.userService.deleteUser(id)
       .then(users => res.json(users))
       .catch(error => this.handleError(error, res));
   }

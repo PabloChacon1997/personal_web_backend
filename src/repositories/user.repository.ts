@@ -1,5 +1,6 @@
 import { AppDataSource } from "../config/database";
 import { User } from "../entities/User";
+import { removeUndefined } from "../utils/removeUndefined";
 
 
 export class UserRepository {
@@ -16,6 +17,17 @@ export class UserRepository {
 
   findById(id: string) {
     return this.repository.findOne({ where: { id } });
+  }
+
+  async update(data: Partial<User>, id: string) {
+    const cleanData = removeUndefined(data);
+    await this.repository.update(id,cleanData);
+    return this.findById(id);
+  }
+
+  async delete(id: string) {
+    const result = this.repository.delete(id);
+    return (await result).affected !== 0
   }
 
   find() {
