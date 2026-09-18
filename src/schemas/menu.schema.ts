@@ -1,0 +1,13 @@
+import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
+import z from "zod";
+
+extendZodWithOpenApi(z);
+
+export const createMenuSchema = z.object({
+  title: z.string({error: 'El titulo es requerido'}).min(2).max(100).openapi({example: 'Proyectos'}),
+  path: z.string({error: 'El path es requerido'}).min(2).max(150).openapi({example: '/proyectos'}),
+  position: z.number().int().default(0).openapi({example: 1}),
+  active: z.boolean().default(true),
+});
+
+export type CreateMenuDto = z.infer<typeof createMenuSchema>
