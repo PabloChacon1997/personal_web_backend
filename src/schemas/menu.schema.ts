@@ -9,5 +9,13 @@ export const createMenuSchema = z.object({
   position: z.number().int().default(0).openapi({example: 1}),
   active: z.boolean().default(true),
 });
+export const createMenuResponseSchema = z.object({
+  id: z.uuid(),
+  title: z.string(),
+  path: z.string(),
+  position: z.number(),
+  active: z.boolean(),
+  createdAt: z.date()
+});
 
 export type CreateMenuDto = z.infer<typeof createMenuSchema>

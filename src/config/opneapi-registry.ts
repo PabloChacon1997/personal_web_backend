@@ -1,7 +1,8 @@
 import { OpenAPIRegistry } from "@asteasolutions/zod-to-openapi";
 
 import { loginResponseSchema, loginSchema, refreshResponseSchema, refreshSchema, registerResponseSchema, registerSchema } from "../schemas/auth.schema";
-import { listUsersQuerySchema, meResponseSchema } from "../schemas/user.schema";
+import { createUserSchema, idQuerySchema, listUsersQuerySchema, meResponseSchema, responseErrorSchema, responseSchema, updateUserSchema } from '../schemas/user.schema';
+import { createMenuResponseSchema, createMenuSchema } from "../schemas/menu.schema";
 
 
 export const registry = new OpenAPIRegistry();
@@ -121,6 +122,96 @@ registry.registerPath({
     200: {
       description: "Usuario autenticado",
       content: { 'application/json': { schema: meResponseSchema } }
+    },
+    401: { description: 'Token Inválido' },
+  }
+});
+
+registry.registerPath({
+  method: 'post',
+  path: '/user/user',
+  tags: ['User'],
+  summary: "Crear un usuario",
+  security: [{ bearerAuth: [] }],
+  request: {
+    body: {
+      content: { 'multipart/form-data': { schema: createUserSchema } },
+    },
+  },
+  responses: {
+    201: {
+      description: "Usuario creado correctamete",
+      content: { 'text/plain': { schema: responseSchema } }
+    },
+    401: { description: 'Token Inválido' },
+    409: { description: 'Ya existe un usuario con este email' },
+  }
+});
+
+registry.registerPath({
+  method: 'put',
+  path: '/user/user/:id',
+  tags: ['User'],
+  summary: "Editar un usuario",
+  security: [{ bearerAuth: [] }],
+  request: {
+    params: idQuerySchema,
+    body: {
+      content: { 'multipart/form-data': { schema: updateUserSchema } },
+    },
+  },
+  responses: {
+    200: {
+      description: "Usuario actualizado correctamete",
+      content: { 'text/plain': { schema: responseSchema } }
+    },
+    401: { description: 'Token Inválido' },
+    404: { description: 'No existe el usuario' },
+  }
+});
+
+registry.registerPath({
+  method: 'delete',
+  path: '/user/user/:id',
+  tags: ['User'],
+  summary: "Eliminar un usuario",
+  security: [{ bearerAuth: [] }],
+  request: {
+    params: idQuerySchema
+  },
+  responses: {
+    200: {
+      description: "Usuario eliminado correctamete",
+      content: { 'text/plain': { schema: responseSchema } }
+    },
+    400: { 
+      description: 'Error en la petición',
+      content: { 'application/json': { schema: responseErrorSchema } }
+    },
+    401: { description: 'Token Inválido' },
+    404: { description: 'No existe el usuario' },
+  }
+});
+
+registry.registerPath({
+  method: 'post',
+  path: '/menu/menu',
+  tags: ['Menu'],
+  summary: "Crear un menu",
+  security: [{ bearerAuth: [] }],
+  request: {
+    body: {
+      content: { 'application/json': { schema: createMenuSchema } }
+    },
+  },
+  responses: {
+    201: {
+      description: "Menu creado correctamete",
+      content: { 'application/json': { schema: createMenuResponseSchema } }
+    },
+    400: { 
+      description: 'Datos incorrectos',
+      content: { 'application/json': { schema: responseErrorSchema } }
     },
     401: { description: 'Token Inválido' },
   }

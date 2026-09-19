@@ -38,7 +38,7 @@ export class UserController {
     }
 
     this.userService.createUser(result.data, req.file?.buffer)
-      .then(users => res.json(users))
+      .then(users => res.status(201).json(users))
       .catch(error => this.handleError(error, res));
   }
 
