@@ -18,4 +18,12 @@ export const createMenuResponseSchema = z.object({
   createdAt: z.date()
 });
 
+export const updateMenuSchema = createMenuSchema.pick({
+  title: true,
+  path: true,
+  position: true,
+  active: true
+});
+
 export type CreateMenuDto = z.infer<typeof createMenuSchema>
+export type UpdateMenuDto = z.infer<typeof updateMenuSchema>

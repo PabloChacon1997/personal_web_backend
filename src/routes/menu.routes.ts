@@ -13,6 +13,9 @@ export class MenuRoutes {
     const menuController = new MenuController(menuService);
 
     router.post('/menu', [AuthMiddleware.authenticate], menuController.createMenu);
+    router.get('/menus', menuController.findAll);
+    router.put('/menu/:id', [AuthMiddleware.authenticate], menuController.updateManue);
+    router.delete('/menu/:id', [AuthMiddleware.authenticate], menuController.deleteMenu);
 
     return router;
   }
