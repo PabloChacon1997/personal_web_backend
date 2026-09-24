@@ -11,8 +11,8 @@ const fileFilter = (req: Request,file: Express.Multer.File, cb: multer.FileFilte
   cb(null, true)
 }
 
-export const upload = multer({
+export const upload = (fieldName: string) => multer({
   storage,
   fileFilter,
   limits: { fileSize: 2 * 1024 * 1024 },
-}).single('avatar');
+}).single(fieldName);

@@ -15,7 +15,7 @@ export class UserRoutes {
     router.get('/me',[AuthMiddleware.authenticate], userController.getMe);
     router.get('/users',[AuthMiddleware.authenticate], userController.getUsers);
     router.post('/user',[AuthMiddleware.authenticate, upload], userController.createUser);
-    router.put('/user/:id',[AuthMiddleware.authenticate, upload], userController.updateUser);
+    router.put('/user/:id',[AuthMiddleware.authenticate, upload('avatar')], userController.updateUser);
     router.delete('/user/:id',[AuthMiddleware.authenticate, upload], userController.deleteUser);
 
     return router;
