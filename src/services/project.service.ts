@@ -40,4 +40,17 @@ export class ProjectService {
       ...(coverImage && { coverImage }),
     })
   }
+
+  async getAll(page: number, limit: number) {
+    const [ projects, total ] = await this.projectRepository.findAll(page, limit);
+    return {
+      data: projects,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total/limit)
+      }
+    }
+  }
 }

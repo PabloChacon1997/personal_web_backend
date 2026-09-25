@@ -10,4 +10,15 @@ export class ProjectRepository {
     const project = this.repository.create(data)
     return this.repository.save(project);
   }
+
+  async findAll(page: number, limit: number) {
+    return this.repository.findAndCount({
+      relations: {
+        technologies: true
+      },
+      order: { position: 'ASC' },
+      skip: (page -1) * limit,
+      take: limit
+    })
+  }
 }

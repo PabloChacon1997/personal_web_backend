@@ -13,6 +13,7 @@ export class ProjectRoutes {
     const projectController = new ProjectController(projectService);
 
     router.post('/', [AuthMiddleware.authenticate, upload('coverImage')], projectController.create);
+    router.get('/', projectController.getAll);
 
     return router;
   }
