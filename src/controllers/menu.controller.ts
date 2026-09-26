@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { CustomError } from "../utils/custom.error";
 import { MenuService } from "../services/menu.service";
 import { createMenuSchema, updateMenuSchema } from "../schemas/menu.schema";
+import { idParamsSchema, listQuery } from "../schemas/common.schema";
 
 
 
@@ -31,28 +32,41 @@ export class MenuController {
   }
 
   public findAll = (req: Request, res: Response) => {
-    const active = req.query.active as string | undefined;
-    this.menuService.getAll(active)
+    const query = listQuery.safeParse(req.query);
+    if (!query.success) {
+      const errors = query.error.flatten().fieldErrors;
+      return res.status(400).json({errors})
+    }
+    this.menuService.getAll(query.data.active)
       .then(menu => res.json(menu))
       .catch(error => this.handleError(error, res));
   }
 
   public updateManue = (req: Request, res: Response) => {
-    const menuId = req.params.id as string
+    const param = idParamsSchema.safeParse(req.params);
+    if (!param.success) {
+      const errors = param.error.flatten().fieldErrors;
+      return res.status(400).json({errors})
+    }
+    
     const result = updateMenuSchema.safeParse(req.body);
     if (!result.success) {
       const errors = result.error.flatten().fieldErrors;
       return res.status(400).json({errors})
     }
 
-    this.menuService.updateMenu(menuId,result.data)
+    this.menuService.updateMenu(param.data.id,result.data)
       .then(menu => res.json(menu))
       .catch(error => this.handleError(error, res));
   }
 
   public deleteMenu = (req: Request, res: Response) => {
-    const menuId = req.params.id as string
-    this.menuService.deleteMenu(menuId)
+    const param = idParamsSchema.safeParse(req.params);
+    if (!param.success) {
+      const errors = param.error.flatten().fieldErrors;
+      return res.status(400).json({errors})
+    }
+    this.menuService.deleteMenu(param.data.id)
       .then(menu => res.json(menu))
       .catch(error => this.handleError(error, res));
   }

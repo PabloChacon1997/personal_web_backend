@@ -17,6 +17,10 @@ export const projectSchema = z.object({
   coverImage: z.any().optional().openapi({type: 'string', format: 'binary', description: 'Imagen de portada'})
 });
 
+export const slugSchema = z.object({
+  slug: z.string().min(1, 'El slug debe tener almenos 1 caracter').max(50)
+});
+
 export const createProjectSchema = projectSchema.pick({
   title: true,
   description: true,
@@ -30,4 +34,17 @@ export const createProjectSchema = projectSchema.pick({
 });
 
 
-export type CreateProjectDto = z.infer<typeof createProjectSchema>
+export const updateProjectSchema = projectSchema.pick({
+  title: true,
+  description: true,
+  githubUrl: true,
+  liveUrl: true,
+  featured: true,
+  active: true,
+  position: true,
+  technologyIds: true,
+  coverImage: true
+}).partial();
+
+export type CreateProjectDto = z.infer<typeof createProjectSchema>;
+export type UpdateProjectDto = z.infer<typeof updateProjectSchema>;

@@ -1,6 +1,7 @@
+import { Project } from "../entities/Project";
 import { ProjectRepository } from "../repositories/project.repository";
 import { TechnologyRepository } from "../repositories/technology.repository";
-import { CreateProjectDto } from "../schemas/proyect.schema";
+import { CreateProjectDto, UpdateProjectDto } from "../schemas/proyect.schema";
 import { CustomError } from "../utils/custom.error";
 import { slugify } from "../utils/slugify";
 import { uploadToCloudinary } from "../utils/uploadToCloudinary";
@@ -52,5 +53,47 @@ export class ProjectService {
         totalPages: Math.ceil(total/limit)
       }
     }
+  }
+
+  async getById(id: Project['id']) {
+    const project = await this.projectRepository.findById(id);
+    if (!project) throw CustomError.notFound('EL proyecto no existe');
+    return project;
+  }
+
+  async getBySlug(slug: Project['slug']) {
+    const project = await this.projectRepository.findBySlug(slug);
+    if (!project) throw CustomError.notFound('EL proyecto no existe');
+    return project;
+  }
+
+  async update(id: Project['id'], data: UpdateProjectDto, coverImageBuffer?: Buffer) {
+    const project = await this.getById(id);
+
+    let technologies = project.technologies
+    if (data.technologyIds) {
+      technologies = await this.validateTechnologies(data.technologyIds);
+    }
+
+    let coverImage: string | undefined;
+    if (coverImageBuffer) {
+      coverImage = await uploadToCloudinary(coverImageBuffer)
+    }
+
+    const { technologyIds, ...rest } = data;
+
+    await this.projectRepository.update(id, {
+      ...rest,
+      technologies,
+      ...(coverImage && { coverImage })
+    })
+
+    return "Proyecto actualizado"
+  }
+
+  async delete(id: Project['id']) {
+    await this.getById(id);
+    await this.projectRepository.delete(id);
+    return "Poryecto eliminado"
   }
 }

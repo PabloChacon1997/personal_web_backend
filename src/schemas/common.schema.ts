@@ -10,5 +10,11 @@ export const paginationQuerySchema = z.object({
 })
 
 
+export const listQuery = z.object({
+  active: z.enum(['true', 'false']).optional(),
+});
+
+
 export type IdParam = z.infer<typeof idParamsSchema>;
 export type PaginationQuery = z.infer<typeof paginationQuerySchema>;
+export type ListQuery = z.infer<typeof listQuery>;

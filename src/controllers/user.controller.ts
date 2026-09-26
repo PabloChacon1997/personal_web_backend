@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { CustomError } from "../utils/custom.error";
 import { UserService } from "../services/user.service";
 import { createUserDtoSchema, updateUserDtoSchema } from "../schemas/user.schema";
+import { idParamsSchema, listQuery } from "../schemas/common.schema";
 
 
 export class UserController {
@@ -23,8 +24,12 @@ export class UserController {
   }
 
   public getUsers = async (req: Request, res: Response) => {
-    const active = req.query.active as string | undefined;
-    this.userService.findAll(active)
+    const query = listQuery.safeParse(req.query);
+    if (!query.success) {
+      const errors = query.error.flatten().fieldErrors;
+      return res.status(400).json({errors})
+    }
+    this.userService.findAll(query.data.active)
       .then(users => res.json(users))
       .catch(error => this.handleError(error, res));
   }
@@ -43,25 +48,33 @@ export class UserController {
   }
 
   public updateUser = async (req: Request, res: Response) => {
-    const id = req.params.id as string;
+    const param = idParamsSchema.safeParse(req.params);
+    if (!param.success) {
+      const errors = param.error.flatten().fieldErrors;
+      return res.status(400).json({errors})
+    }
     const result = updateUserDtoSchema.safeParse(req.body);
     if (!result.success) {
       const errors = result.error.flatten().fieldErrors;
       return res.status(400).json({errors})
     }
 
-    this.userService.updateUser(id, req.body, req.file?.buffer)
+    this.userService.updateUser(param.data.id, req.body, req.file?.buffer)
       .then(users => res.json(users))
       .catch(error => this.handleError(error, res));
   }
 
   public deleteUser = async (req: Request, res: Response) => {
-    const id = req.params.id as string;
-    if (req.user!.id === id) {
+    const param = idParamsSchema.safeParse(req.params);
+    if (!param.success) {
+      const errors = param.error.flatten().fieldErrors;
+      return res.status(400).json({errors})
+    }
+    if (req.user!.id === param.data.id) {
       const error = new Error('No puedes eliminar tu propio usuario');
       return res.status(400).json({error: error.message});
     }
-    this.userService.deleteUser(id)
+    this.userService.deleteUser(param.data.id)
       .then(users => res.json(users))
       .catch(error => this.handleError(error, res));
   }

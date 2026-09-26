@@ -14,6 +14,9 @@ export class ProjectRoutes {
 
     router.post('/', [AuthMiddleware.authenticate, upload('coverImage')], projectController.create);
     router.get('/', projectController.getAll);
+    router.get('/:slug', projectController.getBySlug);
+    router.patch('/:id', [AuthMiddleware.authenticate, upload('coverImage')], projectController.update);
+    router.delete('/:id', [AuthMiddleware.authenticate], projectController.delete);
 
     return router;
   }
