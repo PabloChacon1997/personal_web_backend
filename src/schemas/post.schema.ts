@@ -20,6 +20,9 @@ export const createPostSchema = postSchema.pick({
   content: true,
 });
 
+export const updatePostSchema = createPostSchema;
+
 
 
 export type CreatePostDto = z.infer<typeof createPostSchema>;
+export type UpdatePostDto = z.infer<typeof updatePostSchema>;

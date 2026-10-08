@@ -4,6 +4,10 @@ export const idParamsSchema = z.object({
   id: z.uuid({ message: 'El id debe ser un UUID válido' })
 })
 
+export const pathParamsSchema = z.object({
+  path: z.string({ message: 'El path es requerido' })
+})
+
 export const paginationQuerySchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(50).default(10)

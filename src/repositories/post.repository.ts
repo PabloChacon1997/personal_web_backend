@@ -14,4 +14,25 @@ export class PostRepository {
   findByPath(path: Post['path']) {
     return this.repository.findOne({ where: { path } })
   }
+
+  findById(id: Post['id']) {
+    return this.repository.findOne({ where: { id } })
+  }
+
+  findAll(page: number, limit: number) {
+    return this.repository.findAndCount({
+      order: { createdAt: 'DESC' },
+      skip: (page -1) * limit,
+      take: limit
+    })
+  }
+
+  async update(id: Post['id'], data: Partial<Post>) {
+    await this.repository.update(id, data);
+    return this.findById(id);
+  }
+
+  async delete(id: Post['id']) {
+    await this.repository.delete(id);
+  }
 }
