@@ -30,8 +30,13 @@ export class AuthMiddleware {
       req.user = user;
       return next();
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       return res.status(500).json({ error: 'Internal Server Error' });
     }
+  }
+
+  static requireAdmin(req: Request, res: Response, next: NextFunction) {
+    if (req.user?.role !== 'admin') return res.status(403).json({error: 'No tiene permisos para esta acción'});
+    return next();
   }
 }

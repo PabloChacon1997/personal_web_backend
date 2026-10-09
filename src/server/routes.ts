@@ -6,6 +6,7 @@ import { MenuRoutes } from '../routes/menu.routes';
 import { ProjectRoutes } from '../routes/project.routes';
 import { TechnologyRoutes } from '../routes/technology.routes';
 import { PostRoutes } from '../routes/post.routes';
+import { NewsletterRoutes } from '../routes/newsletter.routes';
 
 
 
@@ -24,6 +25,7 @@ export class AppRoutes {
     router.use('/api/project', ProjectRoutes.routes );
     router.use('/api/technology', TechnologyRoutes.routes );
     router.use('/api/post', PostRoutes.routes );
+    router.use('/api/newsletter', NewsletterRoutes.routes );
 
 
 
